@@ -35,6 +35,34 @@ const promptController = {
     }
   },
 
+  // Get a prompt by ID for the authenticated user
+  async getPromptById(req, res) {
+    try {
+      const { promptId } = req.params; // Prompt ID from URL parameter
+      const prompt = await Prompt.findById(promptId).populate(
+        "createdBy",
+        "username"
+      );
+
+      if (!prompt) {
+        return res.status(404).send("Prompt not found");
+      }
+
+      // Check if the logged-in user is the creator of the prompt
+      if (prompt.createdBy._id.toString() !== req.user._id) {
+        return res
+          .status(403)
+          .send(
+            "Access denied. You do not have permission to view this prompt."
+          );
+      }
+
+      res.send(prompt);
+    } catch (error) {
+      res.status(500).send("Error in fetching prompt: " + error.message);
+    }
+  },
+
   // Edit a prompt
   async editPrompt(req, res) {
     try {
@@ -84,6 +112,31 @@ const promptController = {
       res.send({ likes: prompt.likes });
     } catch (error) {
       res.status(500).send("Error in liking prompt: " + error.message);
+    }
+  },
+
+  // unlike from a prompt
+  async removeLike(req, res) {
+    try {
+      const { promptId } = req.params; // Assuming promptId is passed as a URL parameter
+
+      // Find the prompt and decrement likes
+      const prompt = await Prompt.findById(promptId);
+      if (!prompt) {
+        return res.status(404).send("Prompt not found");
+      }
+
+      // Prevent likes from going negative
+      if (prompt.likes > 0) {
+        prompt.likes -= 1;
+      }
+      await prompt.save();
+
+      res.send({ likes: prompt.likes });
+    } catch (error) {
+      res
+        .status(500)
+        .send("Error in removing like from prompt: " + error.message);
     }
   },
 
