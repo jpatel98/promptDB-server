@@ -1,10 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors"); // Import cors module
 const userRoutes = require("./routes/userRoutes");
 const promptRoutes = require("./routes/promptRoutes");
 
+
+
 const app = express();
+app.use(cors()); // Use cors module
 
 app.use(express.json()); // For parsing JSON request bodies
 
