@@ -5,13 +5,9 @@ const promptController = {
   async addPrompt(req, res) {
     try {
       const { title, description, tags } = req.body;
-
-      // Input validation
       if (!title || !description) {
         return res.status(400).send("Title and description are required");
       }
-
-      // Create and save the prompt
       let prompt = new Prompt({
         title,
         description,
@@ -35,28 +31,17 @@ const promptController = {
     }
   },
 
-  // Get a prompt by ID for the authenticated user
+  // Get a prompt by ID
   async getPromptById(req, res) {
     try {
-      const { promptId } = req.params; // Prompt ID from URL parameter
+      const { promptId } = req.params;
       const prompt = await Prompt.findById(promptId).populate(
         "createdBy",
         "username"
       );
-
       if (!prompt) {
         return res.status(404).send("Prompt not found");
       }
-
-      // Check if the logged-in user is the creator of the prompt
-      if (prompt.createdBy._id.toString() !== req.user._id) {
-        return res
-          .status(403)
-          .send(
-            "Access denied. You do not have permission to view this prompt."
-          );
-      }
-
       res.send(prompt);
     } catch (error) {
       res.status(500).send("Error in fetching prompt: " + error.message);
@@ -67,14 +52,17 @@ const promptController = {
   async editPrompt(req, res) {
     try {
       const { promptId, title, description, tags } = req.body;
-      const prompt = await Prompt.findByIdAndUpdate(
-        promptId,
-        { title, description, tags },
-        { new: true }
-      );
+      const prompt = await Prompt.findOne({
+        _id: promptId,
+        createdBy: req.user._id,
+      });
       if (!prompt) {
-        return res.status(404).send("Prompt not found");
+        return res.status(404).send("Prompt not found or access denied");
       }
+      prompt.title = title;
+      prompt.description = description;
+      prompt.tags = tags;
+      await prompt.save();
       res.send(prompt);
     } catch (error) {
       res.status(500).send("Error in editing prompt: " + error.message);
@@ -84,10 +72,13 @@ const promptController = {
   // Delete a prompt
   async deletePrompt(req, res) {
     try {
-      const { promptId } = req.body;
-      const prompt = await Prompt.findByIdAndDelete(promptId);
+      const { promptId } = req.params;
+      const prompt = await Prompt.findOneAndDelete({
+        _id: promptId,
+        createdBy: req.user._id,
+      });
       if (!prompt) {
-        return res.status(404).send("Prompt not found");
+        return res.status(404).send("Prompt not found or access denied");
       }
       res.send("Prompt deleted successfully");
     } catch (error) {
@@ -98,40 +89,31 @@ const promptController = {
   // Like a prompt
   async likePrompt(req, res) {
     try {
-      const { promptId } = req.params; // Assuming promptId is passed as a URL parameter
-
-      // Find the prompt and increment likes
+      const { promptId } = req.params;
       const prompt = await Prompt.findById(promptId);
       if (!prompt) {
         return res.status(404).send("Prompt not found");
       }
-
-      prompt.likes += 1; // Incrementing the likes
+      prompt.likes += 1;
       await prompt.save();
-
       res.send({ likes: prompt.likes });
     } catch (error) {
       res.status(500).send("Error in liking prompt: " + error.message);
     }
   },
 
-  // unlike from a prompt
+  // Unlike a prompt
   async removeLike(req, res) {
     try {
-      const { promptId } = req.params; // Assuming promptId is passed as a URL parameter
-
-      // Find the prompt and decrement likes
+      const { promptId } = req.params;
       const prompt = await Prompt.findById(promptId);
       if (!prompt) {
         return res.status(404).send("Prompt not found");
       }
-
-      // Prevent likes from going negative
       if (prompt.likes > 0) {
         prompt.likes -= 1;
       }
       await prompt.save();
-
       res.send({ likes: prompt.likes });
     } catch (error) {
       res
@@ -140,7 +122,7 @@ const promptController = {
     }
   },
 
-  // Additional methods for further functionalities can be added here
+  // Additional methods will go here
 };
 
 module.exports = promptController;
