@@ -1,0 +1,11 @@
+{
+  "name": "promptdb-server",
+  "version": "1.0.0",
+  "description": "server for full stack app",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jpatel98",
+  "license": "ISC"
+}
