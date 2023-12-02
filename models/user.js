@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin"],
     default: "user",
   },
+  userImage: {
+    type: String,
+    default: "https://joesch.moe/api/v1/random",
+  },
 });
 
 // Password hashing middleware

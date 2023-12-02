@@ -34,6 +34,7 @@ const userController = {
         username,
         email,
         password: await bcrypt.hash(password, 10),
+        userImage: `https://joesch.moe/api/v1/${username}`,
       });
       await user.save();
 
@@ -66,9 +67,9 @@ const userController = {
       }
 
       // Debugging log
-      console.log("User found: ", user);
-      console.log("Stored hash: ", user.password);
-      console.log("Password being verified: ", password);
+      // console.log("User found: ", user);
+      // console.log("Stored hash: ", user.password);
+      // console.log("Password being verified: ", password);
 
       if (!user) {
         return res.status(401).send("User not found");
@@ -76,7 +77,7 @@ const userController = {
 
       const isMatch = await bcrypt.compare(password, user.password);
       // Debugging log
-      console.log("Password match: ", isMatch);
+      // console.log("Password match: ", isMatch);
 
       if (!isMatch) {
         return res.status(401).send("Invalid credentials");
