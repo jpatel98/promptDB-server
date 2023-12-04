@@ -28,16 +28,18 @@ const userController = {
       if (user) {
         return res.status(400).send("User already exists.");
       }
-
+      
       // Create a new user with hashed password
       user = new User({
         username,
         email,
-        password: await bcrypt.hash(password, 10),
+        password,
         userImage: `https://joesch.moe/api/v1/${username}`,
       });
-      await user.save();
 
+      // console.log("New user created: ", user);
+
+      await user.save();
       // Generate a token
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "1d",
@@ -54,44 +56,50 @@ const userController = {
   async login(req, res) {
     try {
       const { email, password, username } = req.body;
+      // console.log("Login attempt: ", { email, username }); // Log email and username
 
       if (!password || (!email && !username)) {
+        // console.log("Login failed: Missing email/username or password");
         return res.status(400).send("Email/Username and password are required");
       }
 
       let user;
       if (email) {
+        // console.log("Attempting to find user by email");
         user = await User.findOne({ email });
       } else if (username) {
+        // console.log("Attempting to find user by username");
         user = await User.findOne({ username });
       }
 
-      // Debugging log
-      // console.log("User found: ", user);
-      // console.log("Stored hash: ", user.password);
-      // console.log("Password being verified: ", password);
-
       if (!user) {
+        // console.log("Login failed: User not found", { email, username });
         return res.status(401).send("User not found");
       }
 
+      // console.log("User found: ", { id: user._id, email: user.email, username: user.username });
+      // console.log("Stored hash: ", user.password);
+      // console.log("Password being verified: ", password);
+
       const isMatch = await bcrypt.compare(password, user.password);
-      // Debugging log
       // console.log("Password match: ", isMatch);
 
       if (!isMatch) {
+        // console.log("Login failed: Password mismatch");
         return res.status(401).send("Invalid credentials");
       }
 
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "1d",
       });
+      // console.log("Login successful: Token generated");
       res.send({ token });
     } catch (error) {
       console.error("Login error: ", error);
       res.status(500).send("Error in user login: " + error.message);
     }
   },
+
 
   // Additional methods tbd
 };
