@@ -28,7 +28,7 @@ const userController = {
       if (user) {
         return res.status(400).send("User already exists.");
       }
-      
+
       // Create a new user with hashed password
       user = new User({
         username,
@@ -93,13 +93,19 @@ const userController = {
         expiresIn: "1d",
       });
       // console.log("Login successful: Token generated");
-      res.send({ token });
+      res.send({
+        token,
+        user: {
+          username: user.username,
+          email: user.email,
+          userImage: user.userImage,
+        },
+      });
     } catch (error) {
       console.error("Login error: ", error);
       res.status(500).send("Error in user login: " + error.message);
     }
   },
-
 
   // Additional methods tbd
 };
