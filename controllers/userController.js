@@ -107,6 +107,20 @@ const userController = {
     }
   },
 
+  // Get user profile
+  async getProfile(req, res) {
+    try {
+      // req.user._id is set by your authMiddleware
+      const user = await User.findById(req.user._id).select("-password");
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+      res.send(user);
+    } catch (error) {
+      res.status(500).send("Error in fetching user profile: " + error.message);
+    }
+  },
+
   // Additional methods tbd
 };
 
