@@ -13,6 +13,10 @@ const promptSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    featured: {
+      type: Boolean,
+      default: false, // By default, a prompt is not featured
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
