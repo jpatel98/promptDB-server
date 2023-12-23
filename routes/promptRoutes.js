@@ -24,4 +24,7 @@ router.put("/like/:promptId", authMiddleware, promptController.likePrompt); // U
 // Remove like from a prompt
 router.put('/removeLike/:promptId', authMiddleware, promptController.removeLike);
 
+// Get featured prompts
+router.get('/api/prompts/featured', promptController.getFeaturedPrompts);
+
 module.exports = router;

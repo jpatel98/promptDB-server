@@ -122,6 +122,20 @@ const promptController = {
     }
   },
 
+  // Get featured prompts
+  async getFeaturedPrompts(req, res) {
+    try {
+      const featuredPrompts = await Prompt.find({ featured: true }).populate(
+        "createdBy",
+        "username"
+      );
+      res.send(featuredPrompts);
+    } catch (error) {
+      res
+        .status(500)
+        .send("Error in fetching featured prompts: " + error.message);
+    }
+  },
   // Additional methods will go here
 };
 
