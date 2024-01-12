@@ -1,4 +1,5 @@
 const Prompt = require("../models/prompt");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const promptController = {
   // Add a new prompt
@@ -24,8 +25,10 @@ const promptController = {
   // Get all prompts
   async getAllPrompts(req, res) {
     try {
-      const prompts = await Prompt.find().populate("createdBy", "username");
-      res.send(prompts);
+      authMiddleware(req, res, async () => {
+        const prompts = await Prompt.find().populate('createdBy', 'username');
+        res.send(prompts);
+      });
     } catch (error) {
       res.status(500).send("Error in fetching prompts: " + error.message);
     }
