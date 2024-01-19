@@ -9,11 +9,11 @@ router.post("/add", authMiddleware, promptController.addPrompt);
 // Get all prompts
 router.get("/all", promptController.getAllPrompts);
 
-// Get a prompt by its ID
+// Get a prompt by its userID
 router.get(
-  "/getById/:promptId",
+  "/getById/:userId",
   authMiddleware,
-  promptController.getPromptById
+  promptController.getPromptsByUserId
 );
 
 // Edit a prompt
