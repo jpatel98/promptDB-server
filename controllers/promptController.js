@@ -34,7 +34,7 @@ const promptController = {
     }
   },
 
-  // Get a prompt by ID
+  // Get a prompt by userID
   async getPromptById(req, res) {
     try {
       const { promptId } = req.params;
