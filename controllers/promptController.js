@@ -35,19 +35,13 @@ const promptController = {
   },
 
   // Get a prompt by userID
-  async getPromptById(req, res) {
+  async getPromptsByUserId(req, res) {
     try {
-      const { promptId } = req.params;
-      const prompt = await Prompt.findById(promptId).populate(
-        "createdBy",
-        "username"
-      );
-      if (!prompt) {
-        return res.status(404).send("Prompt not found");
-      }
-      res.send(prompt);
+      const { userId } = req.params;
+      const prompts = await Prompt.find({ createdBy: userId }).populate("createdBy", "username");
+      res.send(prompts);
     } catch (error) {
-      res.status(500).send("Error in fetching prompt: " + error.message);
+      res.status(500).send("Error in fetching prompts: " + error.message);
     }
   },
 
