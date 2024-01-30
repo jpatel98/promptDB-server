@@ -48,7 +48,8 @@ const promptController = {
   // Edit a prompt
   async editPrompt(req, res) {
     try {
-      const { promptId, title, description, tags } = req.body;
+      const { promptId } = req.params; // Get promptId from URL params
+      const { title, description, tags } = req.body; // Keep these as they are
       const prompt = await Prompt.findOne({
         _id: promptId,
         createdBy: req.user._id,
