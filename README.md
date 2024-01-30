@@ -1,7 +1,7 @@
 
-# PromptDB
+# PromptDB-server
 
-PromptDB is a full-stack application designed for managing and interacting with a diverse range of prompts. It features user authentication and provides users with the ability to add, edit, delete, and like prompts.
+This is the server repo of PromptDB. It is a full-stack app for managing AI prompts. It features user authentication and provides users with CRUD functionality. This server is deployed on Heroku and is connected via this github repository.
 
 ## Getting Started
 
